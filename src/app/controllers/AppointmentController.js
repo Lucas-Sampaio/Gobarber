@@ -10,34 +10,30 @@ import CancellationMail from '../jobs/CancellationMail';
 
 class AppointmentController {
   async index(req, res) {
-    try {
-      const { page = 1 } = req.query;
-      const appointments = await Appointment.findAll({
-        where: { user_id: req.userId, canceled_at: null },
-        order: ['date'],
-        attributes: ['id', 'date', 'past', 'cancelable'],
-        limit: 20,
-        offset: (page - 1) * 20,
-        include: [
-          {
-            model: User,
-            as: 'provider',
-            attributes: ['id', 'name'],
-            include: [
-              {
-                model: File,
-                as: 'avatar',
-                attributes: ['id', 'path', 'url'],
-              },
-            ],
-          },
-        ],
-      });
+    const { page = 1 } = req.query;
+    const appointments = await Appointment.findAll({
+      where: { user_id: req.userId, canceled_at: null },
+      order: ['date'],
+      attributes: ['id', 'date', 'past', 'cancelable'],
+      limit: 20,
+      offset: (page - 1) * 20,
+      include: [
+        {
+          model: User,
+          as: 'provider',
+          attributes: ['id', 'name'],
+          include: [
+            {
+              model: File,
+              as: 'avatar',
+              attributes: ['id', 'path', 'url'],
+            },
+          ],
+        },
+      ],
+    });
 
-      return res.json(appointments);
-    } catch (error) {
-      return res.json(error);
-    }
+    return res.json(appointments);
   }
 
   async store(req, res) {
